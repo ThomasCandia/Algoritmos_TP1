@@ -36,6 +36,18 @@ struct NodoRepartidor
     NodoPedido *listaPedido;
 };
 
+struct NodoAr  // struct del arbol binario
+{
+	Entregas dato;
+	NodoAr* izq;
+	NodoAr* der;
+};
+struct Entregas  // struct del dato del arbol binario
+{
+	unsigned Centreg; // cantidad de pedidos entregados del comercio
+	string comercio; 
+};
+
 const unsigned CANT_ZONAS = 6;
 
 // Parte 1
@@ -50,8 +62,11 @@ NodoRepartidor* buscarInsertarRepartidor(NodoRepartidor* &lista, Repartidor rep)
 void insertarPedidoPorImporte(NodoPedido*&lista, Pedido pedido);
 void desencolarPedido(ColaPedidos*&cola, Pedido &pedido);
 void transferirPedidos(NodoPedido*&listaPedido, ColaPedidos*&pedidos, int cantPedidos);
-// Partes 3 y 4
+// Partes 3
 void mostrar(NodoRepartidor* listaRep);
+// Parte 4
+void BuscarInsertar (NodoAr* &raiz, Entregas dato);
+void listar(NodoAr* raiz);
 void salir();
 
 int main(){
@@ -63,6 +78,8 @@ int main(){
     for (unsigned i = 0; i<CANT_ZONAS; i++) colas[i] = new ColaPedidos;
     // Lista de repartidores
     NodoRepartidor* listaRep = NULL;
+    // Arbol binario
+    NodoAr* Arbol = NULL;
     // Le muestro un menu de opciones al usuario
     unsigned opcion = 1;
     while (opcion >= 1 && opcion <=3){
@@ -74,7 +91,7 @@ int main(){
             case 1: recibirPedido(archivos, colas); break;
             case 2: asignarPedidos(listaRep, colas); break;
             case 3: mostrar(listaRep); break;
-            case 4: salir(); break;
+            case 4: salir(Arbol); break;
             default: break;
         }
     }
@@ -254,6 +271,47 @@ void mostrar(NodoRepartidor* listaRep){
     }
 }
 
-void salir(){
+void salir(NodoAr* raiz){
 
+}
+    
+void listar(NodoAr* raiz) // muestra el arbol binario
+{
+	if (raiz!= NULL)
+	 {
+	 	listar(raiz->izq);
+	 	cout<<"comercio: "<<raiz->dato.comercio<<endl;
+		cout<<"Pedidos entregados: "<<raiz->dato.Centreg<<endl;
+	 	listar(raiz->der);
+	 }
+}
+void BuscarInsertar (NodoAr* &raiz, Entregas dato)  // Busca un comercio en el arbol binario, si esta le suma los pedidos entregados y sino crea un nuevo nodo ordenado alfabeticamente
+{
+	NodoAr *p, *ant, *n = new NodoAr;
+	n->dato = dato;
+	n->izq = n->der = NULL; //pongo los punteros del nuevo nodo en NULL
+	p=raiz;  // variable recorrido
+	while (p!= NULL && p->dato.comercio!=dato.comercio) // mientras p no llegue al final y no encuentre el mismo nodo
+	{
+		ant =p;
+		if(dato < p->dato)
+		    p= p->izq;
+		else
+		    p=p ->der;
+	}
+	if(raiz== NULL) // si el arbol estaba vacio y nunca entro al ciclo while
+	    raiz = n;   
+	else
+	{
+		if(p->dato.comercio == dato.comercio) // si ya existia el nodo sumo el pedido entregado
+	        p->dato.Centreg ++;
+	    else
+		{
+		    if(dato.comercio < ant->dato.comercio)
+		        ant->izq=n;
+	       	else
+		        ant->der=n;
+		    n->dato.Centreg ++;
+		}
+    }
 }
